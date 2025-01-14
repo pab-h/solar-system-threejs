@@ -1,22 +1,288 @@
-<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-        <script type="importmap">
-            {
-              "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
-				
-              }
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Solar Interativo</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .info-box {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info-box" id="infoBox"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script>
+        // --- Configuração básica ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const infoBox = document.getElementById("infoBox");
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let cameraDistance = 20; // Ajuste conforme necessário para afastar a câmera
+        const spherical = new THREE.Spherical(cameraDistance, Math.PI / 4, Math.PI / 4);
+        const rotationLimits = { minPolar: 0.3, maxPolar: Math.PI - 0.3 };
+
+        // Atualize a posição da câmera com base na configuração inicial
+        updateCameraPosition();
+
+
+        // --- Iluminação ---
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+        directionalLight.position.set(0, 10, 10);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.set(1024, 1024);
+        scene.add(directionalLight);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+        scene.add(ambientLight);
+
+        // --- Texturas e informações ---
+        const textureLoader = new THREE.TextureLoader();
+        const astroInfo = {
+            Sun: "O Sol: Estrela no centro do sistema solar.",
+            Mercury: "Mercúrio: O planeta mais próximo do Sol.",
+            Venus: "Vênus: O planeta mais quente.",
+            Earth: "Terra: Nosso lar.",
+            Mars: "Marte: O planeta vermelho.",
+            Jupiter: "Júpiter: O maior planeta.",
+            Saturn: "Saturno: Famoso por seus anéis.",
+            Uranus: "Urano: O planeta inclinado.",
+            Neptune: "Netuno: O planeta mais distante.",
+        };
+        const sounds = setupSounds();
+
+        // --- Objetos na cena ---
+        const sun = createSun();
+        scene.add(sun);
+
+        const universe = createUniverse();
+        scene.add(universe);
+
+        const planets = createPlanets();
+
+        // --- Configuração de eventos ---
+        setupMouseEvents();
+        setupWheelEvent();
+
+        // --- Funções principais ---
+        function setupSounds() {
+            const sounds = {
+                Sun: new Audio('./sounds/sun.mp3'),
+                Mercury: new Audio('./sounds/mercury.mp3'),
+                Venus: new Audio('./sounds/venus.mp3'),
+                Earth: new Audio('./sounds/earth.mp3'),
+                Mars: new Audio('./sounds/mars.mp3'),
+                Jupiter: new Audio('./sounds/jupiter.mp3'),
+                Saturn: new Audio('./sounds/saturn.mp3'),
+                Uranus: new Audio('./sounds/uranus.mp3'),
+                Neptune: new Audio('./sounds/neptune.mp3'),
+            };
+            for (const sound in sounds) sounds[sound].loop = true;
+            return sounds;
+        }
+
+        function createSun() {
+            const sunTexture = textureLoader.load('./imgs/sun.jpg');
+            const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
+            const sunMaterial = new THREE.MeshBasicMaterial({
+                map: sunTexture,
+                emissive: 0xffff00,
+                emissiveIntensity: 1.5
+            });
+            const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            sun.name = "Sun";
+            return sun;
+        }
+
+        function createUniverse() {
+            const starsTexture = textureLoader.load('./imgs/stars.jpg');
+            const universeGeometry = new THREE.SphereGeometry(100, 64, 64);
+            const universeMaterial = new THREE.MeshBasicMaterial({
+                map: starsTexture,
+                side: THREE.BackSide,
+            });
+            return new THREE.Mesh(universeGeometry, universeMaterial);
+        }
+
+        function createPlanets() {
+            const planetsConfig = [
+                { name: "Mercury", size: 0.3, texture: './imgs/mercury.jpg', distance: 4, speed: 0.02 },
+                { name: "Venus", size: 0.6, texture: './imgs/venus.jpg', distance: 6, speed: 0.015 },
+                { name: "Earth", size: 0.63, texture: './imgs/earth.jpg', distance: 8, speed: 0.01 },
+                { name: "Mars", size: 0.34, texture: './imgs/mars.jpg', distance: 10, speed: 0.008 },
+                { name: "Jupiter", size: 1.4, texture: './imgs/jupiter.jpg', distance: 15, speed: 0.005 },
+                { name: "Saturn", size: 1.2, texture: './imgs/saturn.jpg', distance: 20, speed: 0.004, ring: { inner: 1.7, outer: 2.5, texture: './saturnring.png' } },
+                { name: "Uranus", size: 0.8, texture: './imgs/uranus.jpg', distance: 25, speed: 0.003 },
+                { name: "Neptune", size: 0.78, texture: './imgs/neptune.jpg', distance: 30, speed: 0.002 },
+            ];
+
+            return planetsConfig.map(({ name, size, texture, distance, speed, ring }) => {
+                const planet = createPlanet(name, size, texture, distance, ring);
+                scene.add(planet.orbit);
+                return { ...planet, speed };
+            });
+        }
+
+        function createPlanet(name, size, textureURL, distance, ringConfig) {
+            const geometry = new THREE.SphereGeometry(size, 32, 32);
+            const material = new THREE.MeshStandardMaterial({ map: textureLoader.load(textureURL) });
+            const planet = new THREE.Mesh(geometry, material);
+            planet.position.x = distance;
+            planet.name = name;
+
+            const orbit = new THREE.Group();
+            orbit.add(planet);
+
+            if (ringConfig) {
+                const ringGeometry = new THREE.RingGeometry(ringConfig.inner, ringConfig.outer, 64);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    map: textureLoader.load(ringConfig.texture),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = -Math.PI / 3;
+                planet.add(ring);
             }
-          </script>
-		<script type="module" src="/main.js"></script>
-	</body>
+
+            return { planet, orbit };
+        }
+
+        function setupMouseEvents() {
+            window.addEventListener("mousedown", (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            window.addEventListener("mousemove", (e) => {
+                if (isDragging) handleDrag(e);
+                handleHover(e);
+            });
+
+            window.addEventListener("mouseup", () => (isDragging = false));
+            window.addEventListener("click", handleClick);
+
+            window.addEventListener("dblclick", () => {
+                for (const soundName in sounds) {
+                    const sound = sounds[soundName];
+                    if (!sound.paused) {
+                        sound.pause();
+                    }
+                }
+            });
+
+        }
+
+        function setupWheelEvent() {
+            window.addEventListener("wheel", (e) => {
+                cameraDistance = Math.max(5, Math.min(50, cameraDistance - e.deltaY * 0.05));
+                spherical.radius = cameraDistance;
+                updateCameraPosition();
+            });
+        }
+
+        function handleDrag(event) {
+            const deltaX = event.clientX - previousMousePosition.x;
+            const deltaY = event.clientY - previousMousePosition.y;
+
+            spherical.theta -= deltaX * 0.005;
+            spherical.phi = Math.max(rotationLimits.minPolar, Math.min(rotationLimits.maxPolar, spherical.phi - deltaY * 0.005));
+
+            previousMousePosition = { x: event.clientX, y: event.clientY };
+            updateCameraPosition();
+        }
+
+        function handleHover(event) {
+            updateMousePosition(event);
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(planets.map(({ planet }) => planet).concat(sun));
+
+            if (intersects.length > 0) {
+                const { name } = intersects[0].object;
+                infoBox.style.display = "block";
+                infoBox.style.left = `${event.clientX + 10}px`;
+                infoBox.style.top = `${event.clientY + 10}px`;
+                infoBox.textContent = astroInfo[name] || "Desconhecido";
+            } else {
+                infoBox.style.display = "none";
+            }
+        }
+
+        function handleClick(event) {
+            updateMousePosition(event);
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(planets.map(({ planet }) => planet).concat(sun));
+
+            if (intersects.length > 0) {
+                const { name } = intersects[0].object;
+                const sound = sounds[name];
+                if (sound) toggleSound(sound);
+            }
+        }
+
+        function toggleSound(sound) {
+            if (sound.paused) {
+                sound.play();
+            } else {
+                sound.pause();
+            }
+        }
+
+        function updateMousePosition(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function updateCameraPosition() {
+            camera.position.setFromSpherical(spherical);
+            camera.lookAt(0, 0, 0);
+        }
+
+        // --- Animação ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            planets.forEach(({ planet, orbit, speed }) => {
+                orbit.rotation.y += speed;
+                planet.rotation.y += 0.01;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+
 </html>
