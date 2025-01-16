@@ -100,22 +100,22 @@
         // --- Funções principais ---
         function setupSounds() {
             const sounds = {
-                Sun: new Audio('./sounds/sun.mp3'),
-                Mercury: new Audio('./sounds/mercury.mp3'),
-                Venus: new Audio('./sounds/venus.mp3'),
-                Earth: new Audio('./sounds/earth.mp3'),
-                Mars: new Audio('./sounds/mars.mp3'),
-                Jupiter: new Audio('./sounds/jupiter.mp3'),
-                Saturn: new Audio('./sounds/saturn.mp3'),
-                Uranus: new Audio('./sounds/uranus.mp3'),
-                Neptune: new Audio('./sounds/neptune.mp3'),
+                Sun: new Audio('./assets/sounds/sun.mp3'),
+                Mercury: new Audio('./assets/sounds/mercury.mp3'),
+                Venus: new Audio('./assets/sounds/venus.mp3'),
+                Earth: new Audio('./assets/sounds/earth.mp3'),
+                Mars: new Audio('./assets/sounds/mars.mp3'),
+                Jupiter: new Audio('./assets/sounds/jupiter.mp3'),
+                Saturn: new Audio('./assets/sounds/saturn.mp3'),
+                Uranus: new Audio('./assets/sounds/uranus.mp3'),
+                Neptune: new Audio('./assets/sounds/neptune.mp3'),
             };
             for (const sound in sounds) sounds[sound].loop = true;
             return sounds;
         }
 
         function createSun() {
-            const sunTexture = textureLoader.load('./imgs/sun.jpg');
+            const sunTexture = textureLoader.load('./assets/textures/sun.jpg');
             const sunGeometry = new THREE.SphereGeometry(2, 32, 32);
             const sunMaterial = new THREE.MeshBasicMaterial({
                 map: sunTexture,
@@ -128,7 +128,7 @@
         }
 
         function createUniverse() {
-            const starsTexture = textureLoader.load('./imgs/stars.jpg');
+            const starsTexture = textureLoader.load('./assets/textures/stars.jpg');
             const universeGeometry = new THREE.SphereGeometry(100, 64, 64);
             const universeMaterial = new THREE.MeshBasicMaterial({
                 map: starsTexture,
@@ -139,14 +139,14 @@
 
         function createPlanets() {
             const planetsConfig = [
-                { name: "Mercury", size: 0.3, texture: './imgs/mercury.jpg', distance: 4, speed: 0.02 },
-                { name: "Venus", size: 0.6, texture: './imgs/venus.jpg', distance: 6, speed: 0.015 },
-                { name: "Earth", size: 0.63, texture: './imgs/earth.jpg', distance: 8, speed: 0.01 },
-                { name: "Mars", size: 0.34, texture: './imgs/mars.jpg', distance: 10, speed: 0.008 },
-                { name: "Jupiter", size: 1.4, texture: './imgs/jupiter.jpg', distance: 15, speed: 0.005 },
-                { name: "Saturn", size: 1.2, texture: './imgs/saturn.jpg', distance: 20, speed: 0.004, ring: { inner: 1.7, outer: 2.5, texture: './saturnring.png' } },
-                { name: "Uranus", size: 0.8, texture: './imgs/uranus.jpg', distance: 25, speed: 0.003 },
-                { name: "Neptune", size: 0.78, texture: './imgs/neptune.jpg', distance: 30, speed: 0.002 },
+                { name: "Mercury", size: 0.3, texture: './assets/textures/mercury.jpg', distance: 4, speed: 0.02 },
+                { name: "Venus", size: 0.6, texture: './assets/textures/venus.jpg', distance: 6, speed: 0.015 },
+                { name: "Earth", size: 0.63, texture: './assets/textures/earth.jpg', distance: 8, speed: 0.01 },
+                { name: "Mars", size: 0.34, texture: './assets/textures/mars.jpg', distance: 10, speed: 0.008 },
+                { name: "Jupiter", size: 1.4, texture: './assets/textures/jupiter.jpg', distance: 15, speed: 0.005 },
+                { name: "Saturn", size: 1.2, texture: './assets/textures/saturn.jpg', distance: 20, speed: 0.004, ring: { inner: 1.7, outer: 2.5, texture: './saturnring.png' } },
+                { name: "Uranus", size: 0.8, texture: './assets/textures/uranus.jpg', distance: 25, speed: 0.003 },
+                { name: "Neptune", size: 0.78, texture: './assets/textures/neptune.jpg', distance: 30, speed: 0.002 },
             ];
 
             return planetsConfig.map(({ name, size, texture, distance, speed, ring }) => {
