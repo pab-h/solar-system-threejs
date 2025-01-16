@@ -32,6 +32,9 @@
     <div class="info-box" id="infoBox"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
     <script>
+
+        let speedFactor = 1;
+
         // --- Configuração básica ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -92,6 +95,7 @@
         // --- Configuração de eventos ---
         setupMouseEvents();
         setupWheelEvent();
+        setupKeyboardEvents();
 
         // --- Funções principais ---
         function setupSounds() {
@@ -269,12 +273,42 @@
             camera.lookAt(0, 0, 0);
         }
 
+        function setupKeyboardEvents() {
+            window.addEventListener("keypress", updateSpeedFactor);
+        }
+
+        /**
+         * Tecla | Função
+         * 's' -> restaura o fator de velocidade. 
+         * 'a' -> decrementa o fator de velocidade. Mínimo é 0. 
+         * 'd' -> incrementa o faotr de velocidade. O Máximo é 4.
+        */
+
+        function updateSpeedFactor(e) {
+            const {key} = e;
+
+            if (key == "s") {
+                speedFactor = 1;
+            }
+
+            if (key == "a") {
+                speedFactor -= .01;
+            }
+
+            if (key == "d") {
+                speedFactor += .01;
+            }
+
+            speedFactor = Math.max(0, speedFactor);
+            speedFactor = Math.min(speedFactor, 4);
+        }
+
         // --- Animação ---
         function animate() {
             requestAnimationFrame(animate);
 
             planets.forEach(({ planet, orbit, speed }) => {
-                orbit.rotation.y += speed;
+                orbit.rotation.y += speed  * speedFactor;
                 planet.rotation.y += 0.01;
             });
 
