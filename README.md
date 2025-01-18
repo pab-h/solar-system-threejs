@@ -19,6 +19,7 @@ Este é um projeto colaborativo desenvolvido para a disciplina de Computação G
 | `s`     | Restaura a velocidade orbital |
 | `a`     | Decrementa a velocidade orbital |
 | `d`     | Incrementa a velocidade orbtial |
+| `Scpace`| Habilita/desabilita a visualização das órbitas |
 
 ## 🛠️ Tecnologias Utilizadas
 

@@ -1,4 +1,3 @@
-
 let speedFactor = 1;
 
 // --- Configuração básica ---
