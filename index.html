@@ -158,7 +158,15 @@
                     size: 0.63, 
                     texture: './assets/textures/earth.jpg', 
                     distance: 8, 
-                    speed: 0.01 
+                    speed: 0.01,
+                    satellites: [
+                        {
+                            name: "Moon", 
+                            size: 0.25, 
+                            texture: './assets/textures/earth.jpg', 
+                            distance: 1, 
+                        }
+                    ]
                 },
                 { 
                     name: "Mars", 
@@ -202,14 +210,32 @@
                 },
             ];
 
-            return planetsConfig.map(({ name, size, texture, distance, speed, ring }) => {
-                const planet = createPlanet(name, size, texture, distance, ring);
-                scene.add(planet.orbit);
-                return { ...planet, speed };
-            });
+            return planetsConfig
+                .map(({ 
+                    name, 
+                    size, 
+                    texture, 
+                    distance, 
+                    speed, 
+                    ring, 
+                    satellites 
+                }) => {
+                    const planet = createPlanet(
+                        name, 
+                        size, 
+                        texture, 
+                        distance, 
+                        ring, 
+                        satellites
+                    );
+
+                    scene.add(planet.orbit);
+
+                    return { ...planet, speed };
+                });
         }
 
-        function createPlanet(name, size, textureURL, distance, ringConfig) {
+        function createPlanet(name, size, textureURL, distance, ringConfig, satellites) {
             const geometry = new THREE.SphereGeometry(size, 32, 32);
             const material = new THREE.MeshStandardMaterial({ map: textureLoader.load(textureURL) });
             const planet = new THREE.Mesh(geometry, material);
@@ -220,19 +246,55 @@
             orbit.add(planet);
 
             if (ringConfig) {
-                const ringGeometry = new THREE.RingGeometry(ringConfig.inner, ringConfig.outer, 64);
+                const ringGeometry = new THREE.RingGeometry(
+                    ringConfig.inner,
+                    ringConfig.outer,
+                    64
+                );
+
                 const ringMaterial = new THREE.MeshBasicMaterial({
                     map: textureLoader.load(ringConfig.texture),
                     side: THREE.DoubleSide,
                     transparent: true,
                 });
+
                 const ring = new THREE.Mesh(ringGeometry, ringMaterial);
                 ring.rotation.x = -Math.PI / 3;
+
                 planet.add(ring);
+            }
+
+            if (satellites) {
+
+                satelliteOrbits = []
+
+                for (const satellite of satellites) {
+                    const satelliteGeometry = new THREE.SphereGeometry(satellite.size, 32, 32);
+                    const satelliteMaterial = new THREE.MeshStandardMaterial({
+                        map: textureLoader.load(satellite.texture),
+                    });
+
+                    const satelliteObject = new THREE.Mesh(satelliteGeometry, satelliteMaterial);
+
+                    const satelliteOrbit = new THREE.Group();
+                    
+                    satelliteOrbit.position.copy(planet.position);
+                    satelliteObject.position.set(satellite.distance, 0, 0);
+                    satelliteOrbit.rotation.z = Math.random() * Math.PI * 2;
+
+                    satelliteOrbit.add(satelliteObject);
+                    orbit.add(satelliteOrbit);
+
+                    satelliteOrbits.push(satelliteOrbit);
+                }
+
+                planet.satelliteOrbits = satelliteOrbits;
+
             }
 
             return { planet, orbit };
         }
+
 
         function setupMouseEvents() {
             window.addEventListener("mousedown", (e) => {
@@ -333,12 +395,17 @@
         /**
          * Tecla | Função
          * 's' -> restaura o fator de velocidade. 
+         * 'w' -> zera o fator de velocidade. 
          * 'a' -> decrementa o fator de velocidade. Mínimo é 0. 
          * 'd' -> incrementa o faotr de velocidade. O Máximo é 4.
         */
 
         function updateSpeedFactor(e) {
             const {key} = e;
+
+            if (key == "w") {
+                speedFactor = 0;
+            }
 
             if (key == "s") {
                 speedFactor = 1;
@@ -363,6 +430,13 @@
             planets.forEach(({ planet, orbit, speed }) => {
                 orbit.rotation.y += speed  * speedFactor;
                 planet.rotation.y += 0.01;
+
+                if (planet.satelliteOrbits) {
+                    for(const satelliteOrbit of planet.satelliteOrbits) {
+                        satelliteOrbit.rotation.z += 0.05;
+                    }
+                }
+
             });
 
             renderer.render(scene, camera);
