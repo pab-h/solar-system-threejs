@@ -22,7 +22,7 @@ const rotationLimits = { minPolar: 0.3, maxPolar: Math.PI - 0.3 };
 updateCameraPosition();
 
 // --- Iluminação ---
-const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+const ambientLight = new THREE.AmbientLight(0x333333, 1.5);
 scene.add(ambientLight);
 
 // --- Texturas e informações ---
@@ -45,8 +45,8 @@ const sun = createSun();
 scene.add(sun);
 
 // -- Iluminação no sol ---
-const sunLight = new THREE.PointLight(0xffffcc, 1.5, 100);
-sunLight.position.set(0, 0, 0); 
+const sunLight = new THREE.PointLight(0xffffcc, 1, 100);
+sunLight.position.set(0, 0, 0);
 sun.add(sunLight); 
 
 const universe = createUniverse();
