@@ -21,6 +21,10 @@ const rotationLimits = { minPolar: 0.3, maxPolar: Math.PI - 0.3 };
 // Atualize a posição da câmera com base na configuração inicial
 updateCameraPosition();
 
+// --- Iluminação ---
+const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+scene.add(ambientLight);
+
 // --- Texturas e informações ---
 const textureLoader = new THREE.TextureLoader();
 const astroInfo = {

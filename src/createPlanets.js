@@ -26,7 +26,11 @@ function createPlanets() {
 
 function createPlanet(name, size, textureURL, distance, ringConfig, satellites) {
     const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const material = new THREE.MeshStandardMaterial({ map: textureLoader.load(textureURL) });
+    const material = new THREE.MeshStandardMaterial({ 
+        map: textureLoader.load(textureURL),
+        metalness: 0.1,
+        roughness: 0.8 
+    });
     const planet = new THREE.Mesh(geometry, material);
     planet.position.x = distance;
     planet.name = name;
