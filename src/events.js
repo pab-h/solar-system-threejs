@@ -117,11 +117,11 @@ function updateSpeedFactor(e) {
     }
 
     if (key == "a") {
-        speedFactor -= .01;
+        speedFactor -= .1;
     }
 
     if (key == "d") {
-        speedFactor += .01;
+        speedFactor += .1;
     }
 
     speedFactor = Math.max(0, speedFactor);
