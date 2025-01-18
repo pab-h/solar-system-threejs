@@ -65,6 +65,8 @@ function createPlanet(name, size, textureURL, distance, ringConfig, satellites) 
             const satelliteGeometry = new THREE.SphereGeometry(satellite.size, 32, 32);
             const satelliteMaterial = new THREE.MeshStandardMaterial({
                 map: textureLoader.load(satellite.texture),
+                metalness: 0.1,
+                roughness: 0.8 
             });
 
             const satelliteObject = new THREE.Mesh(satelliteGeometry, satelliteMaterial);
