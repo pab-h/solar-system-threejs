@@ -11,6 +11,15 @@ Este é um projeto colaborativo desenvolvido para a disciplina de Computação G
 - **Texturas realistas**: Aplicação de texturas de alta qualidade para planetas e luas.
 - **Animações Suavizadas**: Movimentos orbitais e rotações com suavidade e precisão.
 
+### Controlando com o teclado
+
+| Tecla   | Função |
+| :-----: | :------ |
+| `w`     | Zera a velocidade orbital |
+| `s`     | Restaura a velocidade orbital |
+| `a`     | Decrementa a velocidade orbital |
+| `d`     | Incrementa a velocidade orbtial |
+
 ## 🛠️ Tecnologias Utilizadas
 
 - **Three.js** — Biblioteca principal para renderização 3D.
