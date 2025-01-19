@@ -1,3 +1,5 @@
+let orbitMeshes = [];
+
 function createPlanets() {
     return planetsConfig
         .map(({ 
@@ -26,13 +28,30 @@ function createPlanets() {
 
 function createPlanet(name, size, textureURL, distance, ringConfig, satellites) {
     const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const material = new THREE.MeshStandardMaterial({ map: textureLoader.load(textureURL) });
+    const material = new THREE.MeshStandardMaterial({ 
+        map: textureLoader.load(textureURL),
+        metalness: 0.1,
+        roughness: 0.8 
+    });
     const planet = new THREE.Mesh(geometry, material);
     planet.position.x = distance;
     planet.name = name;
 
     const orbit = new THREE.Group();
     orbit.add(planet);
+
+    // --- Anel de órbita --- 
+    const orbitGeometry = new THREE.TorusGeometry(distance, 0.015, 15, 100);
+    const orbitMaterial = new THREE.MeshBasicMaterial({
+        map: textureLoader.load("./assets/textures/orbitRing.jpg"),
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 1
+    });
+    const orbitMesh = new THREE.Mesh(orbitGeometry, orbitMaterial);
+    orbitMesh.rotation.x = -Math.PI / 2;
+    orbit.add(orbitMesh);
+    orbitMeshes.push(orbitMesh);
 
     if (ringConfig) {
         const ringGeometry = new THREE.RingGeometry(
@@ -61,6 +80,8 @@ function createPlanet(name, size, textureURL, distance, ringConfig, satellites) 
             const satelliteGeometry = new THREE.SphereGeometry(satellite.size, 32, 32);
             const satelliteMaterial = new THREE.MeshStandardMaterial({
                 map: textureLoader.load(satellite.texture),
+                metalness: 0.1,
+                roughness: 0.8 
             });
 
             const satelliteObject = new THREE.Mesh(satelliteGeometry, satelliteMaterial);

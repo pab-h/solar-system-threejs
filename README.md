@@ -10,6 +10,7 @@ Este é um projeto colaborativo desenvolvido para a disciplina de Computação G
 - **Interatividade**: Controle de câmera para zoom, rotação e movimentação pelo espaço.
 - **Texturas realistas**: Aplicação de texturas de alta qualidade para planetas e luas.
 - **Animações Suavizadas**: Movimentos orbitais e rotações com suavidade e precisão.
+- **Efeito sonoros**: Ao clicar em um planeta, é possível ouvi-lo.
 
 ### Controlando com o teclado
 
@@ -19,6 +20,7 @@ Este é um projeto colaborativo desenvolvido para a disciplina de Computação G
 | `s`     | Restaura a velocidade orbital |
 | `a`     | Decrementa a velocidade orbital |
 | `d`     | Incrementa a velocidade orbtial |
+| `Space` | Habilita/desabilita a visualização das órbitas |
 
 ## 🛠️ Tecnologias Utilizadas
 

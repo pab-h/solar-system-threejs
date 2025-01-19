@@ -94,7 +94,18 @@ function updateCameraPosition() {
 }
 
 function setupKeyboardEvents() {
-    window.addEventListener("keypress", updateSpeedFactor);
+    window.addEventListener("keypress", interact);
+}
+
+function interact(e){
+    updateSpeedFactor(e);
+    changeOrbitVisibility(e);
+}
+
+function toggleOrbits() {
+    orbitMeshes.forEach(orbitMesh => {
+        orbitMesh.visible = !orbitMesh.visible;
+    });
 }
 
 /**
@@ -103,6 +114,7 @@ function setupKeyboardEvents() {
  * 'w' -> zera o fator de velocidade. 
  * 'a' -> decrementa o fator de velocidade. Mínimo é 0. 
  * 'd' -> incrementa o faotr de velocidade. O Máximo é 4.
+ * 'Space' -> desabilita/habilita a visualização das órbitas.
 */
 
 function updateSpeedFactor(e) {
@@ -117,13 +129,19 @@ function updateSpeedFactor(e) {
     }
 
     if (key == "a") {
-        speedFactor -= .01;
+        speedFactor -= .1;
     }
 
     if (key == "d") {
-        speedFactor += .01;
+        speedFactor += .1;
     }
 
     speedFactor = Math.max(0, speedFactor);
     speedFactor = Math.min(speedFactor, 4);
+}
+
+function changeOrbitVisibility(e){
+    if (e.key === " "){
+        toggleOrbits();
+    }
 }

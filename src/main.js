@@ -1,4 +1,3 @@
-
 let speedFactor = 1;
 
 // --- Configuração básica ---
@@ -22,13 +21,7 @@ const rotationLimits = { minPolar: 0.3, maxPolar: Math.PI - 0.3 };
 updateCameraPosition();
 
 // --- Iluminação ---
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-directionalLight.position.set(0, 10, 10);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.set(1024, 1024);
-scene.add(directionalLight);
-
-const ambientLight = new THREE.AmbientLight(0x404040, 1.5);
+const ambientLight = new THREE.AmbientLight(0x333333, 1.5);
 scene.add(ambientLight);
 
 // --- Texturas e informações ---
@@ -49,6 +42,11 @@ const sounds = setupSounds();
 // --- Objetos na cena ---
 const sun = createSun();
 scene.add(sun);
+
+// -- Iluminação no sol ---
+const sunLight = new THREE.PointLight(0xffffcc, 1, 100);
+sunLight.position.set(0, 0, 0);
+sun.add(sunLight); 
 
 const universe = createUniverse();
 scene.add(universe);
