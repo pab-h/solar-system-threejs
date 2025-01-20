@@ -2,7 +2,10 @@
 
 Este é um projeto colaborativo desenvolvido para a disciplina de Computação Gráfica. Utilizando a biblioteca Three.js, criamos uma simulação interativa de um sistema solar que permite explorar planetas e luas de forma envolvente e educativa.
 
-// ToDo: Vídeo demostrativo. @Miguel
+Abaixo, disponibilizamos um vídeo demonstrativo do funcionamento da simulação.
+Clique na imagem para assistir no YouTube:
+
+[![Watch the video](https://img.youtube.com/vi/HCcUAfFijG0/0.jpg)](https://www.youtube.com/watch?v=HCcUAfFijG0)
 
 ## 🚀 Funcionalidades
 
@@ -19,7 +22,7 @@ Este é um projeto colaborativo desenvolvido para a disciplina de Computação G
 | `w`     | Zera a velocidade orbital |
 | `s`     | Restaura a velocidade orbital |
 | `a`     | Decrementa a velocidade orbital |
-| `d`     | Incrementa a velocidade orbtial |
+| `d`     | Incrementa a velocidade orbital |
 | `Space` | Habilita/desabilita a visualização das órbitas |
 
 ## 🛠️ Tecnologias Utilizadas
@@ -36,7 +39,7 @@ Clone o repositório:
 
 Acesse o diretório do projeto:
 
-`cd sistema-solar-threejs`
+`cd solar-system-threejs`
 
 Abra o arquivo `index.html` em seu navegador.
 
